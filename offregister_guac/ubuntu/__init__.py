@@ -1,15 +1,14 @@
+from os import path
 from sys import modules
 
+from fabric.context_managers import cd
+from fabric.contrib.files import append, exists, upload_template
+from fabric.operations import run, sudo
+from offregister_fab_utils.apt import apt_depends
 from offregister_fab_utils.fs import cmd_avail
 from pkg_resources import resource_filename
-from os import path
-
-from fabric.context_managers import cd
-from fabric.contrib.files import append, upload_template, exists
-from fabric.operations import run, sudo
 
 from offregister_guac import get_logger
-from offregister_fab_utils.apt import apt_depends
 
 PKG_NAME = modules[__name__].__name__.partition(".")[0]
 logger = get_logger(modules[__name__].__name__)
