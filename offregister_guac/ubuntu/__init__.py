@@ -1,9 +1,9 @@
 from os import path
 from sys import modules
 
-from fabric.contrib.files import append, exists
 from offregister_fab_utils.apt import apt_depends
 from offregister_fab_utils.fs import cmd_avail
+from patchwork.files import append, exists
 from pkg_resources import resource_filename
 
 from offregister_guac import get_logger
@@ -181,7 +181,7 @@ def install_deps():
                 c.run('make')
                 c.sudo('make install')
                 c.sudo('mkdir -p /etc/ld.so.conf.d')
-                append('/etc/ld.so.conf.d/freerdp.conf', '/usr/local/lib/freerdp', use_sudo=True)
+                append(c, c.sudo, '/etc/ld.so.conf.d/freerdp.conf', '/usr/local/lib/freerdp')
                 c.sudo('ldconfig')"""
 
         libtelnet = "libtelnet-master"
@@ -216,11 +216,12 @@ def install_deps():
         if not exists(c, runner=c.run, path=CATALINA_HOME):
             c.sudo("mkdir -p {CATALINA_HOME}".format(CATALINA_HOME=CATALINA_HOME))
             append(
+                c,
+                c.sudo,
                 "/etc/environment",
                 "export CATALINA_HOME='{CATALINA_HOME}'".format(
                     CATALINA_HOME=CATALINA_HOME
                 ),
-                use_sudo=True,
             )
             tomcat = "apache-tomcat-9.0.1"
             tomcat_ver = tomcat.rpartition("-")[2]
