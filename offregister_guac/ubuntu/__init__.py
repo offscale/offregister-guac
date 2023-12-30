@@ -12,13 +12,13 @@ PKG_NAME = modules[__name__].__name__.partition(".")[0]
 logger = get_logger(modules[__name__].__name__)
 
 
-def install0(*args, **kwargs):
-    install_deps()
-    install_guac_server()
-    install_guac_client()
+def install0(c, *args, **kwargs):
+    install_deps(c)
+    install_guac_server(c)
+    install_guac_client(c)
 
 
-def configure_tomcat1(*args, **kwargs):
+def configure_tomcat1(c, *args, **kwargs):
     CATALINA_HOME = c.run("echo -n $CATALINA_HOME").stdout.rstrip()
     tomcat_users_local_filepath = kwargs.get(
         "tomcat-users.xml",
@@ -70,12 +70,12 @@ def configure_tomcat1(*args, **kwargs):
         return c.sudo("systemctl daemon-reload")
 
 
-def serve2(*args, **kwargs):
+def serve2(c, *args, **kwargs):
     c.sudo("systemctl start tomcat")
     return c.sudo("/etc/init.d/guacd start")
 
 
-def install_deps():
+def install_deps(c):
     # c.sudo('add-apt-repository ppa:mc3man/trusty-media')
     apt_depends(
         c,
@@ -239,7 +239,7 @@ def install_deps():
     return "installed dependencies"
 
 
-def install_guac_server():
+def install_guac_server(c):
     if cmd_avail(c, "guacenc"):
         return "Apache Guacamole server already installed"
 
@@ -261,7 +261,7 @@ def install_guac_server():
     return "installed Apache Guacamole server"
 
 
-def install_guac_client():
+def install_guac_client(c):
     with c.cd("Downloads"):
         if not cmd_avail(c, "mvn"):
             maven = "apache-maven-3.5.0-bin"
